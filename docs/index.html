@@ -561,6 +561,9 @@ flights_g
 ## #   origin &lt;chr&gt;, dest &lt;chr&gt;, air_time &lt;dbl&gt;, distance &lt;dbl&gt;, hour &lt;dbl&gt;,
 ## #   minute &lt;dbl&gt;, time_hour &lt;dttm&gt;
 ```
+---
+### 그룹 계산 - group_by() + summarise()
+
 
 ```r
 summarise(flights_g, mean = mean(dep_delay, na.rm=T), n = n())
@@ -583,6 +586,7 @@ summarise(flights_g, mean = mean(dep_delay, na.rm=T), n = n())
 ## 11    11  5.44 27268
 ## 12    12 16.6  28135
 ```
+
 ---
 
 ### 열 결합(Join) - left_join()
@@ -770,23 +774,29 @@ getAllComment(tar) %&gt;%
 
 ## Warning: `cols` is now required.
 ## Please use `cols = c()`
+
+## Warning: `cols` is now required.
+## Please use `cols = c()`
+
+## Warning: `cols` is now required.
+## Please use `cols = c()`
 ```
 
 ```
-## # A tibble: 149 x 2
+## # A tibble: 343 x 2
 ##    userName contents                                                       
 ##    &lt;chr&gt;    &lt;chr&gt;                                                          
-##  1 june**** 핵심증인빠진체 청문회여는건 어쩔수 없어요 청와대에서 압바해서 법적으로 임명하겠다라고 강행하려고해서 한국당에서 어~
-##  2 bnm3**** 괜찮아 다 빠져도 조국 양심 문재인양심 이인영양심. 양심을 팔아 버린 것들 국민이 심판해서 처절한응징할꺼니까. ~
-##  3 ljsj**** 황씨  나씨  니들은 바로 내려와라 홍준표한테 물려주고 깊히 반성하며 살아라 이기머꼬?~
-##  4 kiwi**** 650원짜리 댓글 알바 특검가자 교활이도 정치하는데 조국이 뭔죄라고 마녀사냥질이냐~
-##  5 pgdn**** 경제어럽고힘든데조국은금수저예지딸을완전다특혜우법등등다일가족들이닌분들챙겨주라보너거들돈배채우지말고조국은사기가족든친인척~
-##  6 bb87**** 여당이 저렇게 발악하니 어쩔 수 있겠나  국민들은 알겠지...뭐 직금까지 나온 것만으로도 특검가야지...~
-##  7 abtr**** "제목 꼬라지하고는...쯧쯧쯧.\n핵심증인?  기준이 뭔데?  누구의 시각에서 핵심증인?"~
-##  8 940w**** 나경원 내려와라 이제와서 뭔 청문회야 증인없이 뭐할라구 답답하네 진짜~
-##  9 kash**** 나경원도 우파쪽 친중세력임. 싸우는척 쇼하고 결국.. 반중에 찬성하는 사람들은 제 말 알것임~~~
-## 10 silf**** "나경원같은 사꾸라가 당대표 한다고\n할때부터\n알아봤다. ㅉㅉ"  
-## # ... with 139 more rows
+##  1 kh10**** 청문회 하든말든 관심없다. 난 윤석열을 믿는다. 마누라 감빵가도 법무장관할지 그게 젤 궁금하다.~
+##  2 knp6**** ...... 조국!!.... 대통령                                       
+##  3 seas**** 그만해라, 조국,문재인. 짜증나서 더 이상 못보겠다. 나도 이제부터 탄핵집회 나간다.~
+##  4 kyuf**** 사실이든 의혹이든 조국은 사태가 이지경인데 법무부장관을 하겠다는건 나쁜 ㅅㄲ임 개혁하려고??자신이 말하는 개혁은~
+##  5 hyou**** 나경원 의원님.... 잘못을 해도 한참 잘못을 하셨네요...아니 왜...면죄부를 주려고 그러는 건지 당최 이해가~
+##  6 lux1**** 요듬 국민일보나 세계일보나 아주 발광을 하네 기득권지키려고 생난리~
+##  7 jks6**** 범법자 조국 부인을 처벌하라. 조국사퇴하라                      
+##  8 ham7**** 민주주의 파괴지뭐.. 지멋대로 임명이니                          
+##  9 jdsl**** 자한당은 지들은 깨끗히냐 부정 취업 입학 더하면 더했지 박근혜때 임명한 장관들 수준을 봐라 일게 트레이너를 행정~
+## 10 mtak**** 좆중동 총출동 의호기사 수백개로 흡짐,  물타기 오졋다 진심.. 나베 왜구당들아 닭 순실 수장들이 빵에 잇어도 ~
+## # ... with 333 more rows
 ```
 
 ---
@@ -1125,6 +1135,12 @@ getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&amp;mid=shm&amp;sid
 
 ## Warning: `cols` is now required.
 ## Please use `cols = c()`
+
+## Warning: `cols` is now required.
+## Please use `cols = c()`
+
+## Warning: `cols` is now required.
+## Please use `cols = c()`
 ```
 
 ```
@@ -1161,21 +1177,21 @@ n_done
 ```
 
 ```
-## # A tibble: 1,773 x 4
-## # Groups:   userName [136]
-##    userName pos           pos_order pos_done  
-##    &lt;chr&gt;    &lt;chr&gt;             &lt;int&gt; &lt;chr&gt;     
-##  1 rlaq**** 조국/n+이가/j         1 조국      
-##  2 rlaq**** 자한당에도/n          2 자한당에도
-##  3 rlaq**** 돈/n+을/j             3 돈        
-##  4 rlaq**** 뿌렸나보/n            4 뿌렸나보  
-##  5 onda**** 못먹는/n              2 못먹는    
-##  6 onda**** 무능한/n              3 무능한    
-##  7 onda**** 야당/n                4 야당      
-##  8 onda**** 나라/n+를/j           6 나라      
-##  9 onda**** 말아먹는/n            7 말아먹는  
-## 10 onda**** 토착/n                8 토착      
-## # ... with 1,763 more rows
+## # A tibble: 3,647 x 4
+## # Groups:   userName [311]
+##    userName pos              pos_order pos_done    
+##    &lt;chr&gt;    &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;       
+##  1 kh10**** 청문회/n                 1 청문회      
+##  2 kh10**** 하든말든/n               2 하든말든    
+##  3 kh10**** 관심/n+없/x+다/e         3 관심        
+##  4 kh10**** 윤석열을/n               6 윤석열을    
+##  5 kh10**** 마누라/n                 9 마누라      
+##  6 kh10**** 감빵가도/n              10 감빵가도    
+##  7 kh10**** 법무장관할지/n          11 법무장관할지
+##  8 kh10**** 그/n+이/j+게/e          12 그          
+##  9 kh10**** 젤/n                    13 젤          
+## 10 kh10**** 궁금/n+하/x+다/e        14 궁금        
+## # ... with 3,637 more rows
 ```
 ---
 
@@ -1206,21 +1222,21 @@ pos_done
 .pull-right[
 
 ```
-## # A tibble: 2,009 x 2
-## # Groups:   userName [136]
-##    userName pos_done    
-##    &lt;chr&gt;    &lt;chr&gt;       
-##  1 rlaq**** 조국        
-##  2 taeh**** 정의당은뭐해
-##  3 seat**** 아싸~       
-##  4 ljsj**** 황씨        
-##  5 kiwi**** 650원       
-##  6 bb87**** 여당        
-##  7 abtr**** 제목        
-##  8 940w**** 나경원      
-##  9 kash**** 나경원도    
-## 10 silf**** 나경원같은  
-## # ... with 1,999 more rows
+## # A tibble: 4,090 x 2
+## # Groups:   userName [311]
+##    userName pos_done
+##    &lt;chr&gt;    &lt;chr&gt;   
+##  1 kh10**** 청문회  
+##  2 kyuf**** 사실    
+##  3 hyou**** 나경원  
+##  4 lux1**** 요듬    
+##  5 jks6**** 범법자  
+##  6 ham7**** 민주주의
+##  7 jdsl**** 자한당은
+##  8 mtak**** 좆중동  
+##  9 jesh**** 사진    
+## 10 jmh0**** 청문회  
+## # ... with 4,080 more rows
 ```
 ]
 
@@ -1376,21 +1392,21 @@ wn
 ```
 
 ```
-## # A tibble: 1,831 x 3
-## # Groups:   userName [136]
+## # A tibble: 3,773 x 3
+## # Groups:   userName [311]
 ##    userName pos_done     n
 ##    &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt;
 ##  1 ysko**** 하다        11
-##  2 ysko**** 깨다         6
-##  3 bays**** 하다         4
-##  4 grea**** 청문회       4
-##  5 jwc7**** 하다         4
-##  6 phil**** 민주당       4
-##  7 phil**** 정의         4
-##  8 swod**** 청문회       4
-##  9 aghk**** 검찰         3
-## 10 aghk**** 사법부       3
-## # ... with 1,821 more rows
+##  2 kyuf**** 개혁         7
+##  3 ysko**** 깨다         6
+##  4 jesh**** 돌다         5
+##  5 bays**** 하다         4
+##  6 cupp**** 조국         4
+##  7 grea**** 청문회       4
+##  8 jwc7**** 하다         4
+##  9 phil**** 민주당       4
+## 10 phil**** 정의         4
+## # ... with 3,763 more rows
 ```
 
 ---
@@ -1409,7 +1425,7 @@ wn %&gt;%
   with(wordcloud(pos_done, n, family = "notosans"))
 ```
 
-![](index_files/figure-html/unnamed-chunk-45-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -1429,7 +1445,7 @@ wn %&gt;%
                  colors = pal))
 ```
 
-![](index_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-47-1.png)&lt;!-- --&gt;
 
 ---
 ### 함께 해요
@@ -1481,10 +1497,10 @@ tar %&gt;%
 .pull-right[
 
 ```
-## # A tibble: 7,932 x 3
+## # A tibble: 7,679 x 3
 ##    item1  item2      n
 ##    &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
-##  1 청문회 조국      21
+##  1 청문회 조국      20
 ##  2 증인   청문회    17
 ##  3 청문회 임명      15
 ##  4 증인   핵심      12
@@ -1492,9 +1508,9 @@ tar %&gt;%
 ##  6 장관   법무부    11
 ##  7 조국   사퇴      11
 ##  8 조국   국민      10
-##  9 조국   임명      10
+##  9 조국   임명       9
 ## 10 조국   법무부     8
-## # ... with 7,922 more rows
+## # ... with 7,669 more rows
 ```
 ]
 ---
@@ -1519,20 +1535,20 @@ pw %&gt;%
 ```
 
 ```
-## # A tibble: 25 x 3
-##    item1 item2                        n
-##    &lt;chr&gt; &lt;chr&gt;                    &lt;dbl&gt;
-##  1 우리  경원                         2
-##  2 우리  울렐레까꿍~                  1
-##  3 우리  야당대표                     1
-##  4 우리  맫겨놨으니ㅉㅉ               1
-##  5 우리  평생                         1
-##  6 우리  고생한번해보질못했을껀데     1
-##  7 우리  우쭈                         1
-##  8 우리  사법부                       1
-##  9 우리  검찰                         1
-## 10 우리  개혁                         1
-## # ... with 15 more rows
+## # A tibble: 28 x 3
+##    item1 item2          n
+##    &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;
+##  1 우리  경원           2
+##  2 우리  렐레           1
+##  3 우리  까꿍~          1
+##  4 우리  야당           1
+##  5 우리  맫겨놨으니     1
+##  6 우리  ㅉㅉ           1
+##  7 우리  평생           1
+##  8 우리  고생           1
+##  9 우리  해보질         1
+## 10 우리  우쭈           1
+## # ... with 18 more rows
 ```
 ---
 
@@ -1552,7 +1568,7 @@ pw %&gt;%
 ## Selecting by n
 ```
 
-![](index_files/figure-html/unnamed-chunk-52-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-53-1.png)&lt;!-- --&gt;
 ---
 ### 함께 해요
 
@@ -1608,11 +1624,13 @@ pw_graph
 ```
 
 ```
-## IGRAPH ce193ec DN-- 6 6 -- 
+## IGRAPH af5ee2e DN-- 12 15 -- 
 ## + attr: name (v/c), n (e/n)
-## + edges from ce193ec (vertex names):
-## [1] 청문회-&gt;조국       증인  -&gt;청문회     청문회-&gt;임명      
-## [4] 조국  -&gt;임명       조국  -&gt;국민       조국  -&gt;법무부장관
+## + edges from af5ee2e (vertex names):
+##  [1] 청문회-&gt;조국   증인  -&gt;청문회 청문회-&gt;임명   증인  -&gt;핵심  
+##  [5] 조국  -&gt;장관   장관  -&gt;법무부 조국  -&gt;사퇴   조국  -&gt;국민  
+##  [9] 조국  -&gt;임명   조국  -&gt;법무부 증인  -&gt;조국   조국  -&gt;검찰  
+## [13] 조국  -&gt;개혁   청문회-&gt;여론   조국  -&gt;여론
 ```
 ---
 네트워크 데이터는 node, edge로 구성됨
@@ -1637,7 +1655,7 @@ ggraph(pw_graph) +
 ## Using `nicely` as default layout
 ```
 
-![](index_files/figure-html/unnamed-chunk-56-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-57-1.png)&lt;!-- --&gt;
 ---
 ## tf-idf
 * tf : 전체 문서내의 단어 빈도
@@ -1665,6 +1683,9 @@ tar %&gt;%
 ## only the first element will be used
 ```
 
+---
+
+
 ```r
 tfidf_tar %&gt;%
   bind_tf_idf(pos, id, n) %&gt;%
@@ -1672,21 +1693,21 @@ tfidf_tar %&gt;%
 ```
 
 ```
-## # A tibble: 3,245 x 6
+## # A tibble: 3,222 x 6
 ## # Groups:   id [342]
 ##       id pos        n    tf   idf tf_idf
 ##    &lt;dbl&gt; &lt;chr&gt;  &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
-##  1    85 급한       1   1    5.83   5.83
+##  1    86 급한       1   1    5.83   5.83
 ##  2   145 저당       1   1    5.83   5.83
-##  3   281 불붙       1   1    5.83   5.83
-##  4    91 여기       1   1    4.45   4.45
-##  5    21 자한       1   1    3.13   3.13
-##  6   183 언론       1   1    3.13   3.13
+##  3   280 불붙       1   1    5.83   5.83
+##  4    92 여기       1   1    4.45   4.45
+##  5   182 언론       1   1    3.20   3.20
+##  6    24 자한       1   1    3.13   3.13
 ##  7   159 기사       1   1    2.94   2.94
-##  8    16 시켜       1   0.5  5.83   2.92
-##  9   111 홍석현     1   0.5  5.83   2.92
+##  8    19 시켜       1   0.5  5.83   2.92
+##  9   112 홍석현     1   0.5  5.83   2.92
 ## 10   117 놀렸       1   0.5  5.83   2.92
-## # ... with 3,235 more rows
+## # ... with 3,212 more rows
 ```
 ---
 ### 연습문제

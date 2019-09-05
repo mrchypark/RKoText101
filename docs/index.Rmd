@@ -366,8 +366,14 @@ group_by()는 데이터에 **지정한 컬럼별**이라는 추가 조건을 지
 ```{r}
 flights_g<-group_by(flights, month)
 flights_g
+```
+---
+### 그룹 계산 - group_by() + summarise()
+
+```{r}
 summarise(flights_g, mean = mean(dep_delay, na.rm=T), n = n())
 ```
+
 ---
 
 ### 열 결합(Join) - left_join()
@@ -1181,6 +1187,11 @@ tar %>%
   group_by(id) %>%
   count(pos) ->
   tfidf_tar
+```
+
+---
+
+```{r}
 tfidf_tar %>%
   bind_tf_idf(pos, id, n) %>%
   arrange(desc(tf_idf))
