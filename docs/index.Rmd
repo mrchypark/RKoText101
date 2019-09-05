@@ -452,6 +452,29 @@ left_join(flights2, airlines, by = "carrier")
 
 ---
 
+### long form과 wide form
+
+.pull-left[
+### long form
+
+1. 컴퓨터가 계산하기 좋은 모양
+1. tidy data의 요건을 충족
+1. tidyverse의 패키지 대부분의 입력 형태
+
+
+.large[단정한 데이터!]
+]
+.pull-right[
+### wide form
+
+1. 사람이 눈으로 보기 좋은 모양
+1. 2개 변수에 대한 값만 확인 가능
+1. dashboard 형이라고도 하며 조인 등 연산이 어려움
+]
+
+
+---
+
 ## 단정하게 텍스트를 다루는 tidytext
 
 ### tidy text data
@@ -1023,7 +1046,7 @@ getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oi
 ### 동시 출현 빈도 계산
 `pairwise_count()` 함수는 그룹 단위 내에서 단어가 동시에 출현한 횟수를 세어주는 함수. 보통 문장 단위를 그룹으로 처리
 
-.pull-left[
+
 ```{r eval=F}
 # install.packages("widyr",dependencies = T)
 library(widyr)
@@ -1047,8 +1070,7 @@ tar %>%
                  sort = T, upper = F) ->
   pw
 ```
-]
-.pull-right[
+---
 ```{r echo=F}
 # install.packages("widyr" ,dependencies = T)
 library(widyr)
@@ -1070,7 +1092,7 @@ pw_tar %>%
   pw
 pw
 ```
-]
+
 ---
 ### 패키지 설치 및 함수 사용법
 ```{r eval=F}
