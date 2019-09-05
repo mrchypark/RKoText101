@@ -1,0 +1,1237 @@
+---
+title: "R로 하는 텍스트 데이터 전처리 방법"
+author: "박찬엽"
+date: "2019년 09월 05일"
+output:
+  xaringan::moon_reader:
+    seal: false
+    css: ["default", "ninjutsu", "custom.css"]
+    lib_dir: libs
+    includes:
+      in_header: google_analytics.html
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '4:3'
+---
+
+layout: true
+
+background-image: url(https://user-images.githubusercontent.com/6179259/60290723-50002480-9954-11e9-96fe-3fbd4d7d11d9.png)
+background-size: cover
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(cache = T, fig.height = 5)
+library(nycflights13)
+```
+---
+
+class: center, middle, title-slide, 
+
+## R로 하는 텍스트 데이터 전처리 방법
+
+### <https://mrchypark.github.io/RKoText101>
+
+#### [[의견 및 오류 신고]](https://github.com/mrchypark/textR/issues/new)
+#### [스타누르기](https://github.com/mrchypark/RKoText101)는 컨텐츠 제작자를 춤추게 합니다.
+
+### 박찬엽  [`r fontawesome::fa("at", fill="#FF1B70")`][mail] [`r fontawesome::fa("facebook-f", fill="#FF1B70")`][fb] [`r fontawesome::fa("github", fill="#FF1B70")`][github]
+
+### 2019년 09월 05일.small[(update: 2019년 9월 5일)]
+
+[mail]: mailto:mrchypark@gmail.com
+[fb]: https://www.facebook.com/mrchypark
+[github]: https://github.com/mrchypark
+
+---
+class: split-50 
+
+.column[.content.vmiddle.right[
+    ![](https://avatars2.githubusercontent.com/u/6179259?v=4&s=460)
+]]
+.column[.content.left[
+<br>
+### 박찬엽     
+- .yellow[(현)] SK Telecome AI센터 AI Product DevOps팀 
+- .yellow[(현)] 팟캐스트 데이터홀릭 .blue[박박사]
+- .gray[(전)]코빗 재무팀 데이터 담당자
+  * 재무DB 구축/관리 및 자동화
+- .gray[(전)]서울도시가스 선행연구팀 연구원
+  * 챗봇 엔진 개발 및 서버 구축
+- .gray[(전)]2017년 패스트 캠퍼스 데이터 분석 R 강의
+  * [데이터 분석을 위한 중급 R 프로그래밍](http://www.fastcampus.co.kr/data_camp_dabrp/)
+- [ForkonLP](https://forkonlp.github.io/) 프로젝트 오너
+  * N사 뉴스 크롤러 [N2H4](https://github.com/forkonlp/N2H4), D사 뉴스 크롤러 [DNH4](https://github.com/forkonlp/DNH4)
+
+
+- .blue[**FACEBOOK**]@[mrchypark](https://www.facebook.com/mrchypark)
+- .gray[**GITHUB**]@[mrchypark](https://github.com/mrchypark)
+]]
+
+---
+class: center, middle, title-slide, 
+
+## [http://dataholic4.github.io/](http://dataholic4.github.io/?tacademy)
+
+[![](https://user-images.githubusercontent.com/6179259/64281809-e5d8b100-cf8e-11e9-9d2c-7363f43bb0a5.png)][데이터홀릭]
+
+
+[데이터홀릭]: http://dataholic4.github.io/?tacademy
+
+---
+class: center, middle, title-slide, 
+
+## 한글 텍스트 분석을 위한 전처리 방법을 공유합니다.
+
+---
+
+## 살펴볼 내용
+
+.pull-left[
+- 사전 지식
+  - tidyverse
+  - 파이프 연산자
+  - 데이터 전처리 기초 - dplyr
+  - 단정한 데이터란
+- 토큰 단위 데이터
+  - 토큰이란
+  - 실습 데이터 소개 - 뉴스 댓글
+  - 토큰 단위 데이터 처리 - tidytext
+
+]
+.pull-right[
+- 형태소 분석기
+  - 설치 및 동작 확인
+  - 형태소 단위 데이터 처리
+  - 띄어쓰기 보정 - KoSpacing
+  - 불용어 처리
+- 텍스트 처리를 위한 정규표현식
+  - 정규표현식 기초
+  - 텍스트 처리 도구 - stringr
+- 기초 정량지표 소개
+  - 단순 빈도
+  - 동시 출현 빈도
+  - TF-IDF
+  - 감성 점수
+]
+
+
+---
+class: center, middle, title-slide, 
+# 사전 지식
+
+## tidyverse
+
+<img src=https://github.com/tidyverse/tidyverse/raw/master/man/figures/logo.png align="center">
+
+---
+
+### tidyverse 패키지는
+
+1. RStudio가 개발, 관리하는 패키지    
+1. 공식 문서가 매우 잘 되어 있음    
+1. 사용자층이 두터워 영어로 검색하면 많은 질답을 찾을 수 있음    
+1. 커뮤니티 설명글도 매우 많음    
+1. 6개의 핵심 패키지 포함 23가지 패키지로 이루어진 메타 패키지    
+1. 중심이 되는 .blue[dplyr] 패키지는 데이터를 다루는 문법의 일종    
+1. .blue[tidy data] 라는 사상과 .blue[파이프 연산자]로 대동단결    
+1. 사상에 영감을 받아 맞춰서 제작하는 개인 패키지가 많음(ex> [tidyquant](https://github.com/business-science/tidyquant), [tidytext](https://github.com/juliasilge/tidytext) 등)
+
+```{r}
+# install.packages("tidyverse")
+library(tidyverse)
+```
+
+---
+class: center, middle, title-slide, 
+### 파이프 연산자(%>%)
+
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/pipes.png)
+
+---
+class: middle, title-slide, 
+### 어떤 동작을 하는 코드일까요?
+
+```{r echo=T, eval=F}
+plot(diff(log(sample(rnorm(10000, mean = 10, sd = 1), size = 100, 
+                     replace = FALSE))), col = "red", type = "l")
+```
+
+\* rnorm() : 평균과 분산을 만족하는 n개의 실수를 생성
+
+---
+class: middle, title-slide, 
+### 어떤 동작을 하는 코드일까요?
+
+```{r eval=FALSE}
+rnorm(10000,mean=10,sd=1) %>%
+  sample(size=100,replace=FALSE) %>%
+  log() %>%
+  diff() %>%
+  plot(col="red",type="l")
+```
+
+\* rnorm() : 평균과 분산을 만족하는 n개의 실수를 생성
+---
+### 파이프 연산자(%>%)
+
+함수를 중첩해서 사용할 일이 점점 빈번해 짐
+
+```{r echo=T, eval=F}
+plot(diff(log(sample(rnorm(10000, mean = 10, sd = 1), size = 100, 
+                     replace = FALSE))), col = "red", type = "l")
+```
+
+**%>%를 사용하면**
+
+1. 생각의 순서대로 함수를 작성할 수 있음
+1. 중간 변수 저장을 할 필요가 없음
+1. 순서가 읽이 용이하여 기억하기 좋음
+
+```{r eval=FALSE}
+rnorm(10000,mean=10,sd=1) %>%
+  sample(size=100,replace=FALSE) %>%
+  log() %>%
+  diff() %>%
+  plot(col="red",type="l")
+```
+
+---
+### 파이프 연산자(%>%)
+
+flights 데이터에 파이프 연산자 사용예 1
+
+```{r}
+flights %>%
+  group_by(year,month,day) %>%
+  summarise(delay = mean(dep_delay, na.rm = TRUE))
+```
+
+```{r include=FALSE}
+flights %>% 
+  group_by(dest) %>% 
+  filter(n() > 365) -> 
+  popular_dests
+popular_dests
+```
+---
+### 파이프 연산자(%>%)
+
+사용할 데이터부터 순서대로 함수를 작성할 수 있는 장점
+
+.pull-left[
+```{r dplyr-example, eval=F}
+popular_dests %>%
+  filter(arr_delay > 0) %>%
+  mutate(prop_delay = 
+           arr_delay / 
+           sum(arr_delay)
+         ) %>%
+  select(month,
+         day, 
+         dest, 
+         arr_delay, 
+         prop_delay)
+```
+]
+.pull-right[
+```{r ref.label = 'dplyr-example', echo = FALSE}
+```
+]
+
+---
+class: center, middle, title-slide, 
+
+![](https://github.com/tidyverse/dplyr/raw/master/man/figures/logo.png)
+
+---
+## 데이터를 다루는 주요 7가지 동작
+
+.pull-left[
+[dplyr][dplyr]은 데이터를 다루는 주요 7가지 동작 자체를 함수로 가지고 추가적인 helper 함수를 함께 제공
+
+1. 열 방향: 선택 - select()
+1. 열 방향: 계산 - mutate()
+1. 행 방향: 조건 - filter()
+1. 행 방향: 추가 - bind_rows()
+1. 행 방향: 정렬 - arrange()
+1. 그룹 계산 - group_by() + summarise()
+1. 열 결합 - left_join()
+]
+.pull-right[
+![](https://raw.githubusercontent.com/mrchypark/dabrp_classnote3/master/docs/img/dplyr.png) 
+]
+[dplyr]: https://dplyr.tidyverse.org/
+---
+
+### 열 방향: 선택 - select()
+
+데이터에서 컬럼을 선택하여 사용함. select()는 선언된 순서대로 컬럼을 정렬함
+.pull-left[
+```{}
+select(flights, year, month, day)
+```
+]
+.pull-right[
+```{r echo=FALSE}
+select(flights, year, month, day)
+```
+]
+
+---
+
+### 열 방향: 계산 - mutate()
+
+출력 편의를 위해 일부 데이터만 사용
+
+```{r}
+flights_sml <- select(flights, year:day, ends_with("delay"), distance, air_time)
+flights_sml
+```
+
+---
+
+### 열 방향: 계산 - mutate()
+
+각 컬럼간의 계산으로 새로운 열을 만들 수 있음
+
+```{r}
+mutate(flights_sml,
+       gain = arr_delay - dep_delay,
+       speed = distance / air_time * 60
+)
+```
+
+---
+
+### 행 방향: 조건 - filter()
+
+filter()는 데이터 중에 조건에 해당하는 일부 데이터만 필터해서 사용. 논리 연산자와 결합하여 많이 사용하며 [이곳](https://mrchypark.github.io/r/operator/%EB%85%BC%EB%A6%AC-%EC%97%B0%EC%82%B0%EC%9E%90-%EC%A0%95%EB%A6%AC.html)에서 추가적으로 내용을 확인할 수 있음
+
+```{r}
+filter(flights, month == 1)
+```
+
+---
+
+### 행 방향: 추가 - bind_rows()
+
+bind_rows()를 진행하기 위해서 데이터를 작성
+
+```{r}
+feb<-filter(flights, month==2)
+dec<-filter(flights, month==12)
+dim(feb); dim(dec)
+nrow(feb)+nrow(dec)
+```
+
+---
+
+### 행 방향: 추가 - bind_rows()
+
+bind_rows()는 컬럼 이름을 기준으로 같은 컬럼 밑에 데이터를 붙여서 **묶어줌**. 
+
+```{r}
+bind_rows(feb, dec)
+```
+
+---
+
+### 행 방향: 정렬 - arrange()
+
+arrange()는 지정되는 컬럼 순으로 오름차순 정렬해주는 함수
+
+```{r}
+arrange(flights, dep_delay)
+```
+
+
+### 그룹 계산 - group_by() + summarise()
+
+summarise()는 여러 데이터를 요약하여 특성을 파악하는 방식으로 동작하는 함수들을 적용할 때 사용.
+
+```{r}
+summarise(flights, mean = mean(dep_delay, na.rm=T), n = n())
+```
+
+---
+
+### 그룹 계산 - group_by() + summarise()
+
+group_by()는 데이터에 **지정한 컬럼별**이라는 추가 조건을 지정하는 기능을 수행
+
+```{r}
+flights_g<-group_by(flights, month)
+flights_g
+summarise(flights_g, mean = mean(dep_delay, na.rm=T), n = n())
+```
+---
+
+### 열 결합(Join) - left_join()
+
+select()를 사용하여 데이터 준비
+
+```{r}
+flights2 <- select(flights, year:day, hour, origin, dest, tailnum, carrier)
+flights2
+```
+---
+
+### 열 결합(Join) - left_join()
+
+left_join()은 왼쪽 데이터를 기준으로 하고, by로 지정된 컬럼이 같은 데이터임을 식별하는 key로 지정하여 오른쪽 데이터를 왼쪽 데이터에 결합하는 함수
+
+```{r}
+left_join(flights2, airlines, by = "carrier")
+```
+
+---
+ 
+### 단정한 데이터(tidy data)
+
+1. [Hadley Wickham](https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html)     
+2. [고감자님의 블로그](http://freesearch.pe.kr/archives/3942)     
+3. [헬로우데이터과학](http://www.hellodatascience.com/?p=287)      
+
+1.1 Each variable forms a column.    
+1.2 각 변수는 개별의 열(column)으로 존재한다.    
+1.3 각 열에는 개별 속성이 들어간다.    
+
+2.1 Each observation forms a row.    
+2.2 각 관측치는 행(row)를 구성한다.    
+2.3 각 행에는 개별 관찰 항목이 들어간다.    
+
+3.1 Each type of observational unit forms a table.    
+3.2 각 테이블은 단 하나의 관측기준에 의해서 조직된 데이터를 저장한다.    
+3.3 각 테이블에는 단일 유형의 데이터가 들어간다.    
+
+\* 출처 : [금융데이터 분석을 위한 R 입문][2]
+
+---
+ 
+### 단정한 데이터(tidy data)
+
+![](http://garrettgman.github.io/images/tidy-1.png)
+
+\* 출처 : [Garrett Grolemund의 Data Science with R 블로그](http://garrettgman.github.io/tidying/)
+
+---
+
+## 함께 해요
+
+1. 왜 데이터를 단정하게 하는 것일까요?
+1. 단정한 데이터의 요건을 잘 갖춘 데이터를 소개해 주세요.
+
+---
+
+### long form과 wide form
+
+.pull-left[
+### long form
+
+1. 컴퓨터가 계산하기 좋은 모양
+1. tidy data의 요건을 충족
+1. tidyverse의 패키지 대부분의 입력 형태
+]
+.pull-right[
+### wide form
+
+1. 사람이 눈으로 보기 좋은 모양
+1. 2개 변수에 대한 값만 확인 가능
+1. dashboard 형이라고도 하며 조인 등 연산이 어려움
+]
+
+---
+
+## 단정하게 텍스트를 다루는 tidytext
+
+### tidy text data
+
+단정한 데이터 원칙을 아래 문장과 함께 적용한다.
+
+* a table with one-token-per-row    
+* 한 행(row)에 한 토큰(token)으로 테이블을 구성해야 한다.
+
+**Token 이란?**
+
+글자 중 의미를 가진 단위를 총칭.    
+tokenization은 가지고 있는 텍스트 자원을 token 단위로 나누는 것을 뜻함.     
+ex> 자소(자음, 모음), 음소(글자), 형태소, 단어, n-gram 등
+
+---
+
+## 함께 해요
+
+1. 가장 쉽게 구분할 수 있는 토큰의 단위는 무엇일까요?
+
+---
+
+### 토큰 단위 처리 `unnest_tokens()`
+
+기본값인 단어 단위(특수문자 제거, 띄어쓰기 기준) token으로 동작.
+
+**함수 설명**
+
+`unnest_tokens()` 함수는 텍스트 데이터를 token 단위로 풀어내는 동작을 수행
+
+```{r eval=F}
+unnest_tokens(
+  # 다루고자 하는 텍스트 데이터 객체
+  tbl = 텍스트 데이터,      
+  # token화의 결과가 작성될 열의 이름
+  output = 결과열의 이름,   
+  # 텍스트 데이터 객체 내의 텍스트 열
+  input = 목표 텍스트 열,   
+  # 기본값(words 단위 = 띄어쓰기 단위)이 있어 생략 가능
+  token = "words",         
+  # 기타 옵션들
+  ...                     
+  )
+```
+
+---
+
+## 실습용 데이터 소개
+
+네이버 기사의 댓글를 수집하기 위해 [N2H4][N2H4] 패키지의 [getAllComment()][getAllComment] 함수를 사용합니다.
+
+[N2H4]: https://cran.r-project.org/web/packages/N2H4/index.html
+[getAllComment]: https://forkonlp.github.io/N2H4/reference/getAllComment.html
+
+```{r}
+#install.packages("N2H4")
+library(N2H4)
+library(dplyr)
+
+tar <- "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313"
+getAllComment(tar) %>% 
+  select(userName, contents)
+```
+
+---
+
+### 함께 해요
+
+1. 다른 N사 포털의 뉴스 댓글을 가져와 보세요.
+
+* 아래 질문들은 `https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313` 링크에서 가져온 댓글을 이용해 주세요.
+
+1. `dplyr` 패키지의 `select()` 함수를 이용해서 사용자 이름(`userName`)과 댓글 내용(`contents`)만 출력해 주세요.
+1. 댓글 중에 지워진(`deleted`) 댓글은 얼마나 되나요?
+1. 공감수(`sympathy`)가 가장 높은 댓글은 무엇인가요?
+
+---
+
+## 텍스트 데이터를 토큰 단위로
+1. ws는 무엇인가요?
+1. contents는 무엇인가요?
+1. "words"는 무엇을 뜻하나요?
+
+---
+
+## 함께 해요
+
+1. 아래 코드는 어떤 결과물을 줄까요?
+1. ws는 무엇을 뜻하나요? 바꿔가면서 어떻게 동작이 다른지 살펴보세요.
+1. `?unnest_tokens`를 실행하여 "words"가 무엇을 뜻하는지 살펴보세요.
+
+```{r eval=F}
+# install.packages("tidytext")
+library(tidytext)
+tar <- "https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313"
+getAllComment(tar) %>% 
+  select(userName, contents)  %>% 
+  unnest_tokens(ws, contents, "words")
+
+```
+
+---
+.pull-left[
+
+## 띄어쓰기 단위의 문제점
+
+**하다**가 몇 가지 단어가 되는지    
+]
+<https://namu.wiki/w/파일:M4nNWBR.png>
+.pull-right[
+<img src=https://user-images.githubusercontent.com/6179259/45862373-5d2c2980-bdac-11e8-9247-3ebde14583e8.png>
+]
+
+---
+
+# 형태소 분석
+
+## 한글의 특징 형태소
+
+형태소란 의미를 가지는 최소 단위
+
+> 철수가 밥을 먹었다.
+
+```{r echo=FALSE}
+library(KoNLP)
+KoNLP::MorphAnalyzer("철수가 밥을 먹었다.")
+```
+
+---
+
+**형태소 분석기의 형태소 품사** / [전체 보기](https://github.com/haven-jeon/KoNLP/blob/master/etcs/figures/konlp_tags.png?raw=true) / [여러 체계의 형태소 품사](https://docs.google.com/spreadsheets/d/1OGAjUvalBuX-oZvZ_-9tEfYD2gQe7hTGsgUpiiBSXI8/edit#gid=0)
+
+![](https://github.com/haven-jeon/KoNLP/blob/master/etcs/figures/konlp_tags.png?raw=true)
+
+---
+
+## 형태소 분석기
+
+### R의 대표적인 형태소 분석기
+
+.pull-left[
+**RmecabKo**
+
+1. 일본어 형태소 분석기인 mecab 기반    
+1. C++ 로 작성하여 속도가 매우 빠름    
+1. 일본어, 중국어 등도 사용 가능    
+1. 형태소 분석 함수를 제공    
+1. 띄어쓰기에 덜 민감함    
+]
+.pull-right[
+**KoNLP**
+
+1. 가장 유명한 형태소 분석기    
+1. java로 작성된 한나눔 분석기 기반    
+1. 우리샘, NiaDIC 등 자체 사전    
+1. 텍스트 분석을 위한 기능들을 제공    
+1. 친절한 [설명서](https://github.com/haven-jeon/KoNLP/blob/master/etcs/KoNLP-API.md)
+]
+---
+
+### KoNLP 설치
+
+자바를 설치합니다.
+
+```{r eval=F}
+# install.packages("remotes")
+remotes::install_github("mrchypark/multilinguer")
+multilinguer::has_java()
+```
+
+\* 직접 다운로드 받아서 설치해도 됩니다.
+
+`KoNLP`를 설치합니다. 
+
+```{r eval=F}
+install.packages("KoNLP")
+library(KoNLP)
+```
+```
+## Checking user defined dictionary!
+```
+---
+### KoNLP 설치 확인
+
+```{r}
+library(KoNLP)
+SimplePos09("롯데마트가 판매하고 있는 흑마늘 양념 치킨이 논란이 되고 있다.")
+```
+---
+
+### RmecabKo 설치(Windows)
+
+패키지를 설치합니다.
+
+```{r eval=F}
+install.packages("RmecabKo")
+```
+
+`mecab-ko`를 설치합니다.
+
+```{r eval=F}
+# c:에 권한이 없다면 "d:/Rlib/mecab"으로 설정
+RmecabKo::install_mecab("c:/Rlib/mecab")
+```
+
+---
+
+### RmecabKo 설치(MacOS)
+
+`mecab-ko`와 `mecab-ko-dic`을 설치합니다. [링크][mecabMac]의 안내를 따릅니다.
+
+Mac OSX terminal에서:
+
+```{}
+tar zxfv mecab-ko-XX.tar.gz
+cd mecab-ko-XX
+./configure 
+make
+make check
+sudo make install
+```
+
+이후 `RmecabKo` 패키지 설치
+
+```{r eval=F}
+install.packages("RmecabKo")
+```
+
+[mecabMac]: https://github.com/junhewk/RmecabKo/blob/master/readme.rmd
+
+---
+
+### RmecabKo 설치 확인
+
+```{r}
+library(RmecabKo)
+pos(iconv("롯데마트가 판매하고 있는 흑마늘 양념 치킨이 논란이 되고 있다.", to = "utf8"))
+```
+
+---
+class: center, middle, title-slide, 
+## 텍스트 관련 R 패키지 설치 가이드
+### <https://mrchypark.github.io/textR/installation>
+
+잘 안되는 부분은 위 링크를 참고해 주세요.
+
+
+[1]: https://github.com/tidyverse/tidyverse
+[2]: https://mrchypark.github.io/kisa_finR
+[tidytextmining]: https://www.tidytextmining.com/
+[tidytext]: https://juliasilge.github.io/tidytext/
+
+---
+### 함께 해요
+
+\* `N2H4` 패키지의 `getContent()`함수는 뉴스의 제목, 본문등의 내용을 가져옵니다.
+
+1. 아래 링크의 뉴스 데이터를 위 함수를 이용해서 `news` 변수에 저장하세요.
+
+`https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=081&aid=0003026718`
+
+1. 본문은 `body` 컬럼에 있습니다. 위 뉴스의 본문을 `RmecabKo` 패키지의 `pos()` 함수로 형태소 분석한 결과를 출력하세요.
+
+1. 위 뉴스의 본문을 `KoNLP` 패키지의 `SimplePos09()` 함수로 형태소 분석한 결과를 출력하세요.
+
+---
+
+## 뉴스 본문 가져와서 word(띄어쓰기) 단위로 나누기
+
+```{r}
+# 하나의 뉴스 데이터를 가져와서
+getContent("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=081&aid=0003026718") %>%
+  # 본문 컬럼을 word 단위로 쪼갠 결과물을 word라는 컬럼으로 출력
+  unnest_tokens(
+    input = body,
+    output = word
+    )
+```
+
+---
+
+형태소 분석기와 함께 사용하기
+
+```{r eval=F}
+unnest_tokens(
+  tbl = 텍스트 데이터,      
+  input = 목표 텍스트 열,   
+  output = 결과열의 이름,   
+  token = "words",       <- 여기에 형태소 분석 함수를 적용
+  ...                     
+  )
+```
+
+---
+
+## 형태소 토큰 단위 데이터 처리
+
+KoNLP의 `SimplePos09()` 함수를 활용해서 형태소 단위로 쪼갠 데이터를 만듭니다.
+
+```{r}
+library(KoNLP)
+# 뉴스 댓글을 가져와서
+getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313") %>%
+  # 사용자 아이디와 댓글 컬럼만 선택하고
+  select(userName, contents) %>% 
+  # 댓글 컬럼을 형태소 단위로 쪼개 
+  # pos라는 컬럼으로 출력
+  unnest_tokens(pos, contents, 
+                token = SimplePos09) %>% 
+  # 사용자 별로 그룹 지어서
+  group_by(userName) %>% 
+  # pos 결과물의 순서 보장을 위해 순서 값을 추가
+  mutate(pos_order = 1:n()) -> 
+  pos_res
+```
+
+---
+
+### 불용어 제거
+
+#### 필요한 형태소 정보만 선택
+
+신뢰할 수 있는 stop word 사전 등이 없기 때문에, 형태소 분석 후 필요한 형태소만 활용.
+
+```{r}
+library(stringr)
+pos_res %>%
+  # 우선 `filter()` 와 `str_detect()` 함수를
+  # 활용하여 명사(n)만 추출
+  filter(str_detect(pos, "/n")) %>% 
+  # 형태소 정보를 제거
+  mutate(pos_done = str_remove(pos, "/.*$")) -> 
+  n_done
+n_done
+```
+---
+
+#### 명사, 형용사, 동사 가져오기
+
+명사는 n, 동사/형용사는 p로 표시. 형태소 분석 후 한 글자는 전후 맥락 없이 의미를 파악하기 어렵기 때문에 제거
+.pull-left[
+```{r eval=F}
+pos_res %>%
+  filter(
+    str_detect(pos, "/p")
+    ) %>% 
+  mutate(
+    pos_done = 
+      str_replace_all(pos, 
+       "/.*$", "다")
+    ) ->
+  p_done
+bind_rows(n_done, p_done) %>% 
+  arrange(pos_order) %>% 
+  filter(nchar(pos_done) > 1) %>% 
+  select(userName, pos_done) ->
+  pos_done
+pos_done
+```
+]
+.pull-right[
+```{r echo=F}
+pos_res %>%
+  filter(str_detect(pos, "/p")) %>% 
+  mutate(
+    pos_done = 
+      str_replace_all(pos, 
+          "/.*$", "다")
+    ) ->
+  p_done
+bind_rows(n_done, p_done) %>% 
+  arrange(pos_order) %>% 
+  filter(nchar(pos_done) > 1) %>% 
+  select(userName, pos_done) ->
+  pos_done
+print(pos_done)
+```
+]
+
+---
+
+#### 함께 사용한 함수 설명
+
+**`str_detect()`**
+
+`str_detect()` 함수는 글자 데이터 내에 찾고자 하는 글자가 있는 지를 T/F로 알려줌
+
+```{r eval=F}
+str_detect(
+  string = 글자 데이터, 
+  pattern = 찾고자 하는 글자,  
+  negate = FALSE # 조건에 맞는 경우 or 그 반대의 결과를 받을 것을 지정
+  )
+```
+
+**`str_replace_all()`**
+
+`str_replace_all()` 함수는 찾고자 하는 글자를 원하는 글자로 바꿔줌.
+
+```{r eval=F}
+str_replace_all(
+  string = 글자 데이터,
+  pattern = 찾고자 하는 글자,
+  replacement = 찾은 글자가 바뀌게 될 글자
+  )
+```
+
+---
+
+**`str_length()`**
+
+`str_length()`는 글자 데이터를 받아서 글자수를 알려줌
+
+```{r eval=F}
+str_count(
+  string = 세고자 하는 글자
+  )
+```
+
+---
+
+### 정규 표현식
+
+글자를 다루는데 유용한 기능을 제공
+
+- `^` : 이걸로 시작함    
+- `$` : 이걸로 끝남    
+- `.` : 임의의 글자 하나    
+- `?` : 앞에 있는 문자가 없거나 하나    
+- `+` : 앞에 있는 문자가 하나 이상    
+- `*` : 앞에 있는 문자가 없거나 하나 이상    
+
+참고 : <https://mrchypark.github.io/dabrp_classnote3/class4>
+
+---
+
+### 함께 해요
+
+1. 아래 코드로 뉴스 댓글을 가져오세요.
+
+```{r eval=F}
+getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313") %>%
+  select(userName, contents) -> tar
+```
+
+*stringr 패키지의 함수를 연습합니다.*
+1. `str_detect()` 함수를 사용해서 댓글(`contents`)에 `양심` 글자가 포함되어 있는 연설문을 찾으세요.
+1. `str_remove()` 함수를 사용해서 댓글(`contents`)에 띄어쓰기를 전부 없애보세요.
+
+*아래 문제부터는 다시 tar를 사용해주세요. 명사만 가져오는 과정을 연습합니다.*
+
+1. 형태소 분석을 하여 결과를 pos 컬럼으로 추가하세요.
+1. `str_detect()` 함수를 사용해서 명사만 남겨보세요.
+1. `str_replace_all()` 함수를 사용해서 POS 정보를 지우고 한글만 남기세요.
+
+---
+
+## 띄어쓰기가 잘못되어 있으면 어떻게 해야 할까?
+
+---
+
+### KoSpacing 설치
+
+아나콘다(파이썬)를 설치합니다.
+
+```{r eval=F}
+# install.packages("remotes")
+remotes::install_github("mrchypark/multilinguer")
+multilinguer::has_conda()
+```
+
+\* 직접 다운로드 받아서 설치해도 됩니다.
+
+`KoSpacing`를 설치합니다. 
+
+```{r eval=F}
+# install.packages("remotes")
+remotes::install_github("haven-jeon/KoSpacing")
+library(KoSpacing)
+set_env()
+```
+```
+## Checking user defined dictionary!
+```
+---
+### KoSpacing 설치 확인
+
+```{r}
+library(KoSpacing)
+spacing("롯데마트가판매하고있는흑마늘양념치킨이논란이되고있다.")
+```
+
+
+
+---
+
+# 텍스트 마이닝 지표
+
+1. 단어 출현 빈도 : 단순히 단어가 나타난 횟수를 세서 확인
+1. 동시 출현 빈도 : 기준 단어와 함께 나타난 단어들과 그 횟수를 세서 확인
+1. tf-idf : 전체 문서에서 나타난 횟수와 개별 문서에서 나타난 횟수로 만든 지표
+<img src=https://user-images.githubusercontent.com/6179259/47669547-78c9f180-dbee-11e8-85e8-e01cb4cbe46d.png class=center width=100%>
+1. 감성 분석 : 단어를 점수화한 감성사전을 사용하여 점수를 합산하여 만든 지표
+
+---
+
+## 단어 출현 빈도
+
+### 단어 출현 빈도 계산
+
+`count()` 함수는 데이터에서 총 몇 번 나왔는지 세어주는 집계함수. `group_by()`와 함께 사용하여 각 사용자별 단어의 출현 횟수 등을 구할 수 있음.
+
+```{r}
+library(dplyr)
+pos_done %>% 
+  count(pos_done, sort = T) -> 
+  wn
+wn
+```
+
+---
+
+### 사용예 : 워드클라우드
+
+`count()` 함수로 단어와 그 빈도 테이블을 만들었다면, `{wordcloud}` 패키지를 사용해서 워드클라우드를 만들 수 있음 `{showtext}` 패키지를 출력 결과물의 폰트를 설정하기 위한 패키지로 [Google Fonts](https://fonts.google.com/)에서 폰트 데이터를 받아와서 출력물에 사용할 수 있음.
+
+```{r message=F, warning=F}
+library(wordcloud)
+library(showtext)
+font_add_google("Noto Sans", "notosans")
+showtext_auto()
+wn %>% 
+  with(wordcloud(pos_done, n, family = "notosans"))
+```
+
+---
+
+**빈도에 따른 색 입히기**
+
+<https://github.com/EmilHvitfeldt/r-color-palettes> 에 R에서 사용할 수 있는 색 테마 패키지들을 소개하고 있음.
+
+```{r warning=F}
+# install.packages("Redmonder")
+library(Redmonder)
+pal = redmonder.pal(6, "sPBIRdPu")
+wn %>% 
+  with(wordcloud(pos_done, 
+                 n, 
+                 family = "notosans",
+                 colors = pal))
+```
+
+---
+### 함께 해요
+
+```{r warning=F}
+getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313") %>%
+  select(userName, contents) -> tar
+```
+
+1. `tar`의 `contents` 컬럼을 `pos()` 함수로 형태소 분석을 진행해주세요.
+1. 그 중 명사만 남기고, 형태소 정보는 지워주세요. 한글자 명사도 지워주세요.
+1. `count()` 함수를 이용해서 단어 출현 빈도를 계산해 주세요.
+1. wordcloud를 만들어 주세요.
+1. 다른 색 조합으로 시도해 주세요.
+1. `group_by()`를 활용하여 각 연설문 별로 단어 출현 빈도를 계산해주세요.
+1. 각 댓글에서 "우리"가 몇 번 사용되었는지 확인해주세요.
+
+---
+### 동시 출현 빈도 계산
+`pairwise_count()` 함수는 그룹 단위 내에서 단어가 동시에 출현한 횟수를 세어주는 함수. 보통 문장 단위를 그룹으로 처리
+
+.pull-left[
+```{r eval=F}
+# install.packages("widyr",dependencies = T)
+library(widyr)
+library(KoNLP)
+library(KoSpacing)
+tar %>%
+  unnest_tokens(sent, contents,
+                token = "sentences") %>%
+  filter(nchar(sent) < 198) %>% 
+    mutate(sent = spacing(sent) %>% 
+           unlist()) %>% 
+  mutate(id = as.numeric(1:n())) %>%
+  unnest_tokens(pos, sent,
+                token = SimplePos09) %>%
+  select(id, pos) %>%
+  filter(str_detect(pos, "/n|/v(v|a)")) %>%
+  mutate(pos =
+           str_remove_all(pos, "/.*$")) %>%
+  filter(nchar(pos) > 1) %>%
+  pairwise_count(pos, id,
+                 sort = T, upper = F) ->
+  pw
+```
+]
+.pull-right[
+```{r echo=F}
+# install.packages("widyr" ,dependencies = T)
+library(widyr)
+library(KoNLP)
+tar %>%
+  unnest_tokens(sent, contents, token = "sentences") %>%
+      filter(nchar(sent)<198) %>% 
+  mutate(sent = spacing(sent) %>% 
+           unlist()) %>% 
+  mutate(id = as.numeric(1:n())) %>%
+  unnest_tokens(pos, sent, token = SimplePos09) %>%
+  select(id, pos) %>%
+  filter(str_detect(pos, "/n|/v(v|a)")) %>%
+  mutate(pos = str_remove_all(pos, "/.*$")) %>%
+  filter(nchar(pos) > 1) ->
+  pw_tar
+pw_tar %>%
+  pairwise_count(pos, id, sort = T, upper = F) ->
+  pw
+pw
+```
+]
+---
+### 패키지 설치 및 함수 사용법
+```{r eval=F}
+install.packages("widyr", dependencies = T)
+pairwise_count(
+  tbl = 대상 데이터,
+  item = 갯수를 새어야 할 컬럼,
+  feature = 함께 출현했다고 판단할 단위 그룹,
+  sort = 출현 횟수 단위로 정렬할지
+)
+```
+---
+### 기준 단어로 데이터 탐색
+`filter()` 함수로 기준 단어를 조회하면 함께 자주 나오는 단어와 그 빈도를 확인할 수 있음
+```{r}
+pw %>%
+  filter(item1 == "우리")
+```
+---
+```{r}
+library(forcats)
+library(ggplot2)
+# bar plot
+pw %>%
+  filter(item1 %in% c("우리")) %>%
+  top_n(15) %>%
+  mutate(item2 = fct_reorder(item2, n, .desc = TRUE)) %>%
+  ggplot(aes(x = item2, y = n, fill = item1)) +
+  geom_bar(stat = "identity")
+```
+---
+### 함께 해요
+```{r warning=F}
+getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313") %>%
+  select(userName, contents) -> tar
+```
+
+1. 위의 코드를 이용해서 `tar` 데이터를 만들어주세요.
+1. `tar`의 `content` 컬럼을 문장 단위로 나누어 주세요.
+1. 새롭게 문장별 id를 `id` 컬럼으로 추가해주세요.
+1. 문장별 id를 유지한 채로 `pos()` 함수를 사용하여 형태소 분석을 진행해 주세요.
+1. 명사(`/n`), 동사(`/vv`), 형용사(`/va`)인 형태소만 가져와 주세요.
+1. 형태소 정보는 제거하지 말고 그대로 두세요.
+1. 동시 출현 빈도 테이블을 만들어 주세요. (컬럼이 item1, item2, n으로 구성됩니다.)
+1. `우리/np`와 함께 출현한 단어들과 그 빈도를 확인하세요.
+1. 명사는 형태소 정보를 제거하고, 형용사와 동사는 형태소 정보를 제거한후 뒤에 `다`를 붙여주세요.
+1. 한 글자는 제거해 주세요.
+1. 동시 출현 빈도 테이블을 만들어 주세요. (컬럼이 item1, item2, n으로 구성됩니다.)
+1. `사랑`과 함께 출현한 단어들과 그 빈도를 확인하세요.
+---
+## 예시 답안
+```{r eval=F}
+tar %>%
+  mutate(speech_id = 1:nrow(.)) %>%
+  unnest_tokens(senten, content,
+                token = "sentences") %>%
+  select(speech_id, senten) %>%
+  mutate(sentence_id = 1:nrow(.)) %>%
+  unnest_tokens(morph, senten,
+                token = pos) %>%
+  filter(str_detect(morph, "/n|/v(v|a)")) %>%
+  mutate(morph = if_else(
+    str_detect(morph, "/n"),
+    str_replace_all(morph, "/.*$", ""),
+    str_replace_all(morph, "/.*$", "다")
+  )) %>%
+  filter(str_length(morph) > 1) %>%
+  pairwise_count(morph, sentence_id, sort = T, upper = F) %>%
+  filter(item1 == "사랑")
+```
+---
+### 사용예 : 네트워크 시각화
+```{r message=F}
+library(igraph)
+pw %>%
+  filter(n > 5) %>%
+  graph_from_data_frame() ->
+  pw_graph
+pw_graph
+```
+---
+네트워크 데이터는 node, edge로 구성됨
+```{r}
+library(ggraph)
+set.seed(2018)
+a <- grid::arrow(type = "closed", length = unit(.1, "inches"))
+ggraph(pw_graph) +
+  geom_edge_link(
+    aes(edge_alpha = n),
+    show.legend = FALSE,
+    arrow = a,
+    end_cap = circle(.07, 'inches')
+  ) +
+  geom_node_point(color = "lightblue", size = 3) +
+  geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+  theme_void()
+```
+---
+## tf-idf
+* tf : 전체 문서내의 단어 빈도
+* idf : 단어를 가지는 문서 비율의 역수
+<img src=https://user-images.githubusercontent.com/6179259/47669547-78c9f180-dbee-11e8-85e8-e01cb4cbe46d.png class=center width=100%>
+---
+### tf-idf 계산
+`bind_tf_idf()` 함수가 `tf`, `idf`, `tf-idf` 점수 모두를 제공하며 문서 단위의 정의가 매우 중요함. 보통 각 연설문, 개별 뉴스 본문 등을 하나의 문서로 정의함. `tf-idf` 가 높을 수록 각 문서에서 특별한 의미를 지니는 것으로 판단할 수 있음.
+```{r}
+tar %>%
+  mutate(id = as.numeric(1:n())) %>%
+  unnest_tokens(pos, contents, token = pos) %>%
+  select(id, pos) %>%
+  filter(str_detect(pos, "/n|/v(v|a)")) %>%
+  mutate(pos = str_remove_all(pos, "/.*$")) %>%
+  filter(nchar(pos) > 1) %>%
+  group_by(id) %>%
+  count(pos) ->
+  tfidf_tar
+tfidf_tar %>%
+  bind_tf_idf(pos, id, n) %>%
+  arrange(desc(tf_idf))
+```
+---
+### 연습문제
+```{r warning=F}
+getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313") %>%
+  select(userName, contents) -> tar
+```
+
+1. 새롭게 댓글별 id를 `id` 컬럼으로 추가해주세요.
+1. 문장별 id를 유지한 채로 `pos()` 함수를 사용하여 형태소 분석을 진행해 주세요.
+1. 명사(`/n`), 동사(`/vv`), 형용사(`/va`)인 형태소만 가져와 주세요.
+1. 명사는 형태소 정보를 제거하고, 형용사와 동사는 형태소 정보를 제거한후 뒤에 `다`를 붙여주세요.
+1. 한 글자는 제거해 주세요.
+1. 댓글 별로 형태소 단위 빈도를 계산해 주세요.
+1. `bind_tf_idf()` 함수를 사용해서 `tf`, `idf`, `tf-idf` 를 계산해주세요.
+1. 각 댓글 별로 `tf-idf` 점수가 가장 높은 단어를 확인하세요.
+1. 각 댓글 별로 `tf-idf` 점수가 가장 높은 3개 단어씩을 확인하세요.
+---
+## 감성 분석
+- 감성 분석은 각 단어의 감성 사전을 구축하여 점수를 주는 방식
+- 한글의 특성상, 형태소이며 ngram에 점수를 부여하는 것이 가장 효과적일 것
+- 단순한 형태로는 unigram의 형태소에 점수나 종류를 부여하는 것
+- 개별 단어의 점수를 부여한 뒤 문장 단위로 합산하여 계산
+- 합산으로 0에 가까운 값이 나올 수 도 있으므로 점수를 부여받은 단어의 갯수등 도 고려 필요
+- 안정적으로 기구축된 한글 사전을 찾기 어려움
+---
+### 사전 소개
+[KnuSentiLex](https://github.com/park1200656/KnuSentiLex)는 군산대 [Data Intelligence Lab](http://dilab.kunsan.ac.kr/)에서 기존 사전들을 참조, 활용하여 18년 구축한 감성 사전. 구조가 단순하고 이모티콘 등을 추가한 점이 장점인 반면, 형태소 형식이 아니라 점수의 신뢰도가 낮은 편임.
+[KOSAC](http://word.snu.ac.kr/kosac/)은 서울대에서 13년에 구축한 감성사전으로 구조가 복잡하고 점수를 내기 어렵지만 12년에 구축한 감성 스키마를 따르고 있어 다양한 감성 정보를 얻을 수 있음.
+본 예시에는 구조가 단순한 `KnuSentiLex`을 사용
+```{r}
+# remotes::install_github("mrchypark/KnuSentiLexR")
+library(KnuSentiLexR)
+tar %>%
+  unnest_tokens(sent, contents, token = "sentences") %>%
+  filter(nchar(sent) < 20) %>%
+  select(sent) ->
+  senti_tar
+```
+---
+### 감성 분석 점수
+- `senti_score()` 함수는 문장을 unigram 부터 3-gram 까지 작성한 후, 감성 사전에 점수를 합산하여 문장 점수를 계산
+- `senti_magnitude()` 함수는 몇개의 ngram이 점수화되었는지를 계산
+- `dic` 객체가 word, polarity 컬럼을 가지고 있는 감성 사전임
+```{r}
+senti_tar %>%
+  mutate(score = senti_score(sent),
+         magni = senti_magnitude(sent)) %>%
+  filter(score != 0)
+```
