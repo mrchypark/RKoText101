@@ -792,34 +792,20 @@ getAllComment(tar) %&gt;%
 ```
 
 ```
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-```
-
-```
-## # A tibble: 343 x 2
+## # A tibble: 342 x 2
 ##    userName contents                                                       
 ##    &lt;chr&gt;    &lt;chr&gt;                                                          
-##  1 kh10**** 청문회 하든말든 관심없다. 난 윤석열을 믿는다. 마누라 감빵가도 법무장관할지 그게 젤 궁금하다.~
-##  2 knp6**** ...... 조국!!.... 대통령                                       
-##  3 seas**** 그만해라, 조국,문재인. 짜증나서 더 이상 못보겠다. 나도 이제부터 탄핵집회 나간다.~
-##  4 kyuf**** 사실이든 의혹이든 조국은 사태가 이지경인데 법무부장관을 하겠다는건 나쁜 ㅅㄲ임 개혁하려고??자신이 말하는 개혁은~
-##  5 hyou**** 나경원 의원님.... 잘못을 해도 한참 잘못을 하셨네요...아니 왜...면죄부를 주려고 그러는 건지 당최 이해가~
+##  1 gugu**** 도대체 나경원이는 무슨 여론에 쫓겨서 증인도 없는 청문회를 합의했단 말인가 도무지 이해가 안간다!! 진짜 나경원~
+##  2 kh10**** 청문회 하든말든 관심없다. 난 윤석열을 믿는다. 마누라 감빵가도 법무장관할지 그게 젤 궁금하다.~
+##  3 knp6**** ...... 조국!!.... 대통령                                       
+##  4 seas**** 그만해라, 조국,문재인. 짜증나서 더 이상 못보겠다. 나도 이제부터 탄핵집회 나간다.~
+##  5 kyuf**** 사실이든 의혹이든 조국은 사태가 이지경인데 법무부장관을 하겠다는건 나쁜 ㅅㄲ임 개혁하려고??자신이 말하는 개혁은~
 ##  6 lux1**** 요듬 국민일보나 세계일보나 아주 발광을 하네 기득권지키려고 생난리~
 ##  7 jks6**** 범법자 조국 부인을 처벌하라. 조국사퇴하라                      
 ##  8 ham7**** 민주주의 파괴지뭐.. 지멋대로 임명이니                          
 ##  9 jdsl**** 자한당은 지들은 깨끗히냐 부정 취업 입학 더하면 더했지 박근혜때 임명한 장관들 수준을 봐라 일게 트레이너를 행정~
 ## 10 mtak**** 좆중동 총출동 의호기사 수백개로 흡짐,  물타기 오졋다 진심.. 나베 왜구당들아 닭 순실 수장들이 빵에 잇어도 ~
-## # ... with 333 more rows
+## # ... with 332 more rows
 ```
 
 ---
@@ -1089,6 +1075,7 @@ class: center, middle, title-slide,
 ```r
 # 하나의 뉴스 데이터를 가져와서
 getContent("https://news.naver.com/main/read.nhn?mode=LSD&amp;mid=shm&amp;sid1=101&amp;oid=081&amp;aid=0003026718") %&gt;%
+  select(body) %&gt;% 
   # 본문 컬럼을 word 단위로 쪼갠 결과물을 word라는 컬럼으로 출력
   unnest_tokens(
     input = body,
@@ -1097,19 +1084,19 @@ getContent("https://news.naver.com/main/read.nhn?mode=LSD&amp;mid=shm&amp;sid1=1
 ```
 
 ```
-## # A tibble: 177 x 6
-##    url         datetime            edittime            press title    word 
-##    &lt;chr&gt;       &lt;dttm&gt;              &lt;dttm&gt;              &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt;
-##  1 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 현지 
-##  2 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 차주가~
-##  3 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 아파트~
-##  4 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 대신 
-##  5 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 토지 
-##  6 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 사들여~
-##  7 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 투자금~
-##  8 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 3264 
-##  9 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 억   
-## 10 https://ne~ 2019-09-05 05:08:00 2019-09-05 05:08:00 서울신문~ ‘호주 부동산~ 중   
+## # A tibble: 177 x 1
+##    word  
+##    &lt;chr&gt; 
+##  1 현지  
+##  2 차주가
+##  3 아파트
+##  4 대신  
+##  5 토지  
+##  6 사들여
+##  7 투자금
+##  8 3264  
+##  9 억    
+## 10 중    
 ## # ... with 167 more rows
 ```
 
@@ -1152,32 +1139,6 @@ getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&amp;mid=shm&amp;sid
   pos_res
 ```
 
-```
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-
-## Warning: `cols` is now required.
-## Please use `cols = c()`
-```
-
-```
-## Warning in value[[3L]](cond): can't processing '경제어럽고힘든데조국은금수
-## 저예지딸을완전다특혜우법등등다일가족들이닌분들챙겨주라보너거들돈배채우지말
-## 고조국은사기가족든친인척도정말증인없이청문회조국은변명등모는디는식이고시간
-## 히루갖고청문서도9일10일이틀을정말처문셔조국이때도니자쿠말을겨변등진쿠거짓예
-## 또번명힌디먼정말국정조사증ㅈ인들다나오고깅생하는순긴다들자외투쟁바른미래당
-## 특겅등시위예투쟁도저의당더불어인주당표기그쪽펑박지윈은져발친노면친문들은싹
-## 자르고언젼기는김대중대통러믄통합은해다화인주당바른이래딩이져사져대로조국부
-## 인도사기펀드드뮈조문서죄등언등다정말더불어인주당들이자꾸이재정부터이해찬죄
-## 인이다한ㄱ당들은이재정저년은입을언론탄압져다'.
-```
-
 ---
 
 ### 불용어 제거
@@ -1200,21 +1161,21 @@ n_done
 ```
 
 ```
-## # A tibble: 3,647 x 4
-## # Groups:   userName [311]
-##    userName pos              pos_order pos_done    
-##    &lt;chr&gt;    &lt;chr&gt;                &lt;int&gt; &lt;chr&gt;       
-##  1 kh10**** 청문회/n                 1 청문회      
-##  2 kh10**** 하든말든/n               2 하든말든    
-##  3 kh10**** 관심/n+없/x+다/e         3 관심        
-##  4 kh10**** 윤석열을/n               6 윤석열을    
-##  5 kh10**** 마누라/n                 9 마누라      
-##  6 kh10**** 감빵가도/n              10 감빵가도    
-##  7 kh10**** 법무장관할지/n          11 법무장관할지
-##  8 kh10**** 그/n+이/j+게/e          12 그          
-##  9 kh10**** 젤/n                    13 젤          
-## 10 kh10**** 궁금/n+하/x+다/e        14 궁금        
-## # ... with 3,637 more rows
+## # A tibble: 3,635 x 4
+## # Groups:   userName [310]
+##    userName pos                pos_order pos_done  
+##    &lt;chr&gt;    &lt;chr&gt;                  &lt;int&gt; &lt;chr&gt;     
+##  1 gugu**** 나경원이는/n               2 나경원이는
+##  2 gugu**** 여론/n+에/j                4 여론      
+##  3 gugu**** 증인/n+도/j                6 증인      
+##  4 gugu**** 청문회/n+를/j              8 청문회    
+##  5 gugu**** 합의/n+하/x+었단/e         9 합의      
+##  6 gugu**** 말/n+이/j+ㄴ가/e          10 말        
+##  7 gugu**** 이해/n+가/j               12 이해      
+##  8 gugu**** 안간다!/n                 13 안간다!   
+##  9 gugu**** 진짜/n                    15 진짜      
+## 10 gugu**** 나경원/n                  16 나경원    
+## # ... with 3,625 more rows
 ```
 ---
 
@@ -1245,21 +1206,21 @@ pos_done
 .pull-right[
 
 ```
-## # A tibble: 4,090 x 2
-## # Groups:   userName [311]
+## # A tibble: 4,071 x 2
+## # Groups:   userName [310]
 ##    userName pos_done
 ##    &lt;chr&gt;    &lt;chr&gt;   
 ##  1 kh10**** 청문회  
 ##  2 kyuf**** 사실    
-##  3 hyou**** 나경원  
-##  4 lux1**** 요듬    
-##  5 jks6**** 범법자  
-##  6 ham7**** 민주주의
-##  7 jdsl**** 자한당은
-##  8 mtak**** 좆중동  
-##  9 jesh**** 사진    
-## 10 jmh0**** 청문회  
-## # ... with 4,080 more rows
+##  3 lux1**** 요듬    
+##  4 jks6**** 범법자  
+##  5 ham7**** 민주주의
+##  6 jdsl**** 자한당은
+##  7 mtak**** 좆중동  
+##  8 jesh**** 사진    
+##  9 jmh0**** 청문회  
+## 10 iuwe**** 바미당은
+## # ... with 4,061 more rows
 ```
 ]
 
@@ -1320,6 +1281,8 @@ str_count(
 - `*` : 앞에 있는 문자가 없거나 하나 이상    
 
 참고 : &lt;https://mrchypark.github.io/dabrp_classnote3/class4&gt;
+
+# "/.*$"
 
 ---
 
@@ -1384,6 +1347,10 @@ spacing("롯데마트가판매하고있는흑마늘양념치킨이논란이되�
 ```
 
 ```
+## loaded KoSpacing model!
+```
+
+```
 ## [1] "롯데마트가 판매하고 있는 흑마늘 양념치킨이 논란이 되고 있다."
 ```
 
@@ -1399,8 +1366,6 @@ spacing("롯데마트가판매하고있는흑마늘양념치킨이논란이되�
 
 ---
 
-## 단어 출현 빈도
-
 ### 단어 출현 빈도 계산
 
 `count()` 함수는 데이터에서 총 몇 번 나왔는지 세어주는 집계함수. `group_by()`와 함께 사용하여 각 사용자별 단어의 출현 횟수 등을 구할 수 있음.
@@ -1415,8 +1380,8 @@ wn
 ```
 
 ```
-## # A tibble: 3,773 x 3
-## # Groups:   userName [311]
+## # A tibble: 3,757 x 3
+## # Groups:   userName [310]
 ##    userName pos_done     n
 ##    &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt;
 ##  1 ysko**** 하다        11
@@ -1429,7 +1394,7 @@ wn
 ##  8 jwc7**** 하다         4
 ##  9 phil**** 민주당       4
 ## 10 phil**** 정의         4
-## # ... with 3,763 more rows
+## # ... with 3,747 more rows
 ```
 
 ---
@@ -1646,9 +1611,9 @@ pw_graph
 ```
 
 ```
-## IGRAPH af5ee2e DN-- 12 15 -- 
+## IGRAPH 0c3e428 DN-- 12 15 -- 
 ## + attr: name (v/c), n (e/n)
-## + edges from af5ee2e (vertex names):
+## + edges from 0c3e428 (vertex names):
 ##  [1] 청문회-&gt;조국   증인  -&gt;청문회 청문회-&gt;임명   증인  -&gt;핵심  
 ##  [5] 조국  -&gt;장관   장관  -&gt;법무부 조국  -&gt;사퇴   조국  -&gt;국민  
 ##  [9] 조국  -&gt;임명   조국  -&gt;법무부 증인  -&gt;조국   조국  -&gt;검찰  
@@ -1700,11 +1665,6 @@ tar %&gt;%
   tfidf_tar
 ```
 
-```
-## Warning in if (lengths(sentence) == 1) {: the condition has length &gt; 1 and
-## only the first element will be used
-```
-
 ---
 
 
@@ -1732,7 +1692,7 @@ tfidf_tar %&gt;%
 ## # ... with 3,212 more rows
 ```
 ---
-### 연습문제
+### 함께 해요
 
 ```r
 getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&amp;mid=shm&amp;sid1=100&amp;oid=005&amp;aid=0001236313") %&gt;%

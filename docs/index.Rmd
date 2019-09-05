@@ -23,7 +23,7 @@ background-size: cover
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(cache = T, fig.height = 5)
+knitr::opts_chunk$set(cache = T, fig.height = 5,  warning=F)
 library(nycflights13)
 ```
 ---
@@ -530,7 +530,7 @@ unnest_tokens(
 [N2H4]: https://cran.r-project.org/web/packages/N2H4/index.html
 [getAllComment]: https://forkonlp.github.io/N2H4/reference/getAllComment.html
 
-```{r}
+```{r warning=F}
 #install.packages("N2H4")
 library(N2H4)
 library(dplyr)
@@ -748,6 +748,7 @@ class: center, middle, title-slide,
 ```{r}
 # 하나의 뉴스 데이터를 가져와서
 getContent("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=101&oid=081&aid=0003026718") %>%
+  select(body) %>% 
   # 본문 컬럼을 word 단위로 쪼갠 결과물을 word라는 컬럼으로 출력
   unnest_tokens(
     input = body,
@@ -910,6 +911,8 @@ str_count(
 
 참고 : <https://mrchypark.github.io/dabrp_classnote3/class4>
 
+# "/.*$"
+
 ---
 
 ### 함께 해요
@@ -979,8 +982,6 @@ spacing("롯데마트가판매하고있는흑마늘양념치킨이논란이되�
 1. 감성 분석 : 단어를 점수화한 감성사전을 사용하여 점수를 합산하여 만든 지표
 
 ---
-
-## 단어 출현 빈도
 
 ### 단어 출현 빈도 계산
 
@@ -1219,7 +1220,7 @@ tfidf_tar %>%
   arrange(desc(tf_idf))
 ```
 ---
-### 연습문제
+### 함께 해요
 ```{r warning=F}
 getAllComment("https://news.naver.com/main/read.nhn?mode=LSD&mid=shm&sid1=100&oid=005&aid=0001236313") %>%
   select(userName, contents) -> tar
